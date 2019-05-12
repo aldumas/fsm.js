@@ -1,0 +1,7 @@
+{
+    "plugins": ["plugins/markdown"],
+    "source": {
+        "includePattern": ".+\\.js$"
+    },
+    "sourceType": "module"
+}

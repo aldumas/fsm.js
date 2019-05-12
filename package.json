@@ -4,7 +4,8 @@
   "description": "FSM implementation",
   "main": "fsm.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "doc": "node_modules/.bin/jsdoc -c ./jsdoc.json -d ./doc -r ./src"
   },
   "repository": {
     "type": "git",
