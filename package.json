@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/aldumas/fsm.js/issues"
   },
-  "homepage": "https://github.com/aldumas/fsm.js#readme"
+  "homepage": "https://github.com/aldumas/fsm.js#readme",
+  "devDependencies": {
+    "jdoc": "^0.2.0"
+  }
 }
