@@ -1,6 +1,7 @@
 /**
  * A finite state machine implementation.
  * 
+ * @module
  * @author Adam Dumas
  * @todo Set up testing.
  */
@@ -76,6 +77,7 @@
  * demo.postEvent("EXAMPLE_EVENT", "An example argument.");
  */
 export function createMachine(config) {
+    console.log("HERE");
     let machine = Object.create(fsm);
 
     let {spec, pass, start, end, options} = config || {};
