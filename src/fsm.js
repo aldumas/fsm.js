@@ -77,7 +77,6 @@
  * demo.postEvent("EXAMPLE_EVENT", "An example argument.");
  */
 export function createMachine(config) {
-    console.log("HERE");
     let machine = Object.create(fsm);
 
     let {spec, pass, start, end, options} = config || {};
