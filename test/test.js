@@ -2,9 +2,9 @@ var assert = require("assert");
 var util = require("util");
 var fsm = require("../src/fsm.js");
 
-function unexpectedRejection(done) {
-    return () => done('unexpected rejection');
-}
+/* NOTE: in several cases, we wrap all the promises returned by the FSM in a
+ * single promise (via Promise.all) so we can return it to Mocha, which will
+ * fail the test if it is rejected. */
 
 describe("when creating the machine", function() {
 
@@ -71,7 +71,7 @@ describe("before the machine has started", function() {
 
 describe("when the machine is running", function() {
 
-    it("should reset to the start state if postStart() is called again", function(done) {
+    it("should reset to the start state if postStart() is called again", function() {
         let callbackCount = 0;
         const EXPECTED_CALLBACK_COUNT = 2;
 
@@ -95,11 +95,13 @@ describe("when the machine is running", function() {
             }
         });
 
-        machine.postStart(); // ==> callbackCount = 1 after it enters START
-        machine.postEvent('EVENT'); // should be in MIDDLE state after it executes
-        machine.postStart() // ==> callbackCount = 2 after it enters START
-            .then(() => done(callbackCount !== EXPECTED_CALLBACK_COUNT))
-            .catch(unexpectedRejection(done));
+        return Promise.all(
+            [
+                machine.postStart(),        // ==> callbackCount = 1 after it enters START
+                machine.postEvent('EVENT'), // should be in MIDDLE state after it executes
+                machine.postStart()         // ==> callbackCount = 2 after it enters START
+            ])       
+            .then(() => assert.equal(callbackCount, EXPECTED_CALLBACK_COUNT));
     });
 
     it("should pass arguments to action, but not to entry or exit", function() {
@@ -112,7 +114,7 @@ describe("when the machine is running", function() {
 
     describe("when transitioning from state to state", function() {
 
-        it("should invoke entry, exit, and action callbacks", function(done) {
+        it("should invoke entry, exit, and action callbacks", function() {
             let callbackCount = 0;
             const EXPECTED_CALLBACK_COUNT = 3;
             
@@ -131,13 +133,15 @@ describe("when the machine is running", function() {
                 }
             });
     
-            machine.postStart();
-            machine.postEvent("EVENT")
-                .then(() => done(callbackCount !== EXPECTED_CALLBACK_COUNT))
-                .catch(unexpectedRejection(done));
+            return Promise.all(
+                [
+                    machine.postStart(),
+                    machine.postEvent("EVENT")
+                ])
+                .then(() => assert.equal(callbackCount, EXPECTED_CALLBACK_COUNT));
         });
     
-        it("should invoke current state's exit(), then the event's action(), then the next state's entry()", function(done) {
+        it("should invoke current state's exit(), then the event's action(), then the next state's entry()", function() {
             const callbacksCalled = [];
             const EXPECTED_CALLBACKS_CALLED = ["exit", "action", "entry"];
     
@@ -157,11 +161,13 @@ describe("when the machine is running", function() {
                     }
                 }
             });
-    
-            machine.postStart();
-            machine.postEvent("EVENT")
-                .then(() => done(!util.isDeepStrictEqual(callbacksCalled, EXPECTED_CALLBACKS_CALLED)))
-                .catch(unexpectedRejection(done));
+
+            return Promise.all(
+                [
+                    machine.postStart(),
+                    machine.postEvent("EVENT")
+                ])
+                .then(() => assert.deepStrictEqual(callbacksCalled, EXPECTED_CALLBACKS_CALLED));
         });
 
     });
