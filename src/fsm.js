@@ -266,7 +266,8 @@ function allNextStates(spec) {
         //     [state, state, ...],
         //     [state]
         // ]
-        .flat()
+        // flatten
+        .reduce((flattened, stateList) => flattened.concat(stateList))
         // remove duplicates
         .filter((() => {
             let stateSet = {};

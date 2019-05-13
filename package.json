@@ -4,7 +4,7 @@
   "description": "FSM implementation",
   "main": "fsm.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --require babel-polyfill --require babel-register",
     "doc": "node_modules/.bin/jsdoc -c ./jsdoc.json -d ./doc -r ./src"
   },
   "repository": {
@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/aldumas/fsm.js#readme",
   "devDependencies": {
-    "jsdoc": "^3.6.2"
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "jsdoc": "^3.6.2",
+    "mocha": "^6.1.4"
   }
 }
