@@ -15,10 +15,7 @@ describe("when transitioning from state to state", function() {
                     transitions: {
                         EVENT: {
                             nextState: "END",
-                            action: () => {
-                                ++callbackCount;
-                                done(callbackCount !== EXPECTED_CALLBACK_COUNT);
-                            }
+                            action: () => ++callbackCount
                         }
                     }
                 }
@@ -26,7 +23,8 @@ describe("when transitioning from state to state", function() {
         });
 
         machine.postStart();
-        machine.postEvent("EVENT");
+        machine.postEvent("EVENT")
+            .then(() => done(callbackCount !== EXPECTED_CALLBACK_COUNT));
     });
 
     it("should invoke current state's exit(), then the event's action(), then the next state's entry()", function(done) {
@@ -45,20 +43,18 @@ describe("when transitioning from state to state", function() {
                     }
                 },
                 END: {
-                    entry: () => {
-                        callbacksCalled.push("entry");
-                        done(!util.isDeepStrictEqual(callbacksCalled, EXPECTED_CALLBACKS_CALLED));
-                    }
-                },
+                    entry: () => callbacksCalled.push("entry")
+                }
             }
         });
 
         machine.postStart();
-        machine.postEvent("EVENT");
+        machine.postEvent("EVENT")
+            .then(() => done(!util.isDeepStrictEqual(callbacksCalled, EXPECTED_CALLBACKS_CALLED)));
     });
 
     describe("when ignoreUnexpectedEvents == false", function() {
-        it("should error if event is received before machine is started", function(done) {
+        it("should error if event is received before machine is started", function() {
             const machine = fsm.createMachine({
                 spec: {
                     START: {
@@ -71,14 +67,12 @@ describe("when transitioning from state to state", function() {
                 }
             });
 
-            assert.rejects(machine.postEvent("EVENT"))
-                .then(() => done())
-                .catch(() => done(true));
+            return assert.rejects(machine.postEvent("EVENT"));
         });
     });
 
     describe("when ignoreUnexpectedEvents == true", function() {
-        it("should not error if event is received before machine is started", function(done) {
+        it("should not error if event is received before machine is started", function() {
             const machine = fsm.createMachine({
                 options: {
                     ignoreUnexpectedEvents: true
@@ -94,9 +88,7 @@ describe("when transitioning from state to state", function() {
                 }
             });
 
-            assert.doesNotReject(machine.postEvent("EVENT"))
-                .then(() => done())
-                .catch(() => done(true));
+            return assert.doesNotReject(machine.postEvent("EVENT"));
         });
     });
 });
