@@ -197,7 +197,7 @@ const fsm = {
                     callOptionalFn(this._state.spec.entry, this._pass);
                 } else if (nextState != this._end) { // end is optional
                     // this can happen if the caller modifies the state machine
-                    reject(fsmError(this._state, `invalid next state ${nextState} encountered while processing event '${event}' in state ${this._state.name}`));
+                    reject(error(this._state, `invalid next state ${nextState} encountered while processing event '${event}' in state ${this._state.name}`));
                     return;
                 }
 
@@ -210,7 +210,7 @@ const fsm = {
         if (this._options.ignoreUnexpectedEvents) {
             resolve();
         } else {
-            reject(fsmError(this._state, `unexpected event ${event}`));
+            reject(error(this._state, `unexpected event ${event}`));
         }
     }
 };
@@ -226,7 +226,7 @@ function callOptionalFn(fn, pass, args) {
 function throwErrorOnInvalidFsmSpec(spec, start, end) {
     let { ok, errMsg } = validateFsm(spec, start, end);
     if (!ok) {
-        throw fsmError(null, errMsg);
+        throw error(null, errMsg);
     }
 }
 
@@ -245,7 +245,7 @@ function validateFsm(spec, start, end) {
         errMsg = `missing start state ${start}`;
     } else if (invalidStates.length > 0) {
         ok = false;
-        errMsg = `invalid next state${invalidStates.length > 1 ? 's' : ''} -  ${invalidStates.join(', ')}`;
+        errMsg = `invalid next state${invalidStates.length > 1 ? 's' : ''} - ${invalidStates.join(', ')}`;
     }
 
     return { ok, errMsg };
@@ -267,7 +267,7 @@ function allNextStates(spec) {
         //     [state]
         // ]
         // flatten
-        .reduce((flattened, stateList) => flattened.concat(stateList))
+        .reduce((flattened, stateList) => flattened.concat(stateList), [])
         // remove duplicates
         .filter((() => {
             let stateSet = {};
@@ -279,9 +279,9 @@ function allNextStates(spec) {
         })());
 }
 
-function fsmError(state, message) {
-    let error = new Error(message);
-    error.name = `FiniteStateMachine [STATE: ${state == null ? '<None>' : state.name}]`;
-    error.state = state;
-    return error;
+export function error(state, message) {
+    let err = new Error(message);
+    err.name = `FiniteStateMachine [STATE: ${state == null ? '<None>' : state.name}]`;
+    err.state = state;
+    return err;
 }
