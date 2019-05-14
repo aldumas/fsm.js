@@ -85,7 +85,7 @@ describe("when creating the machine", function() {
                 }
             }));
         });
-        
+
     });
 
     it("should throw error if a nextState does not exist (other than the end state, which is optional)", function() {
@@ -371,6 +371,42 @@ describe("when the machine is running", function() {
                     machine.postEvent("EVENT")
                 ])
                 .then(() => assert.deepStrictEqual(callbacksCalled, EXPECTED_CALLBACKS_CALLED));
+        });
+
+        it("should work if you post events to the machine even from an entry, exit, or action callback", function(done) {
+            const machine = fsm.createMachine({
+                spec: {
+                    START: {
+                        entry: () => machine.postEvent('FIRST'),
+                        exit: () => machine.postEvent('SECOND'),
+                        transitions: {
+                            FIRST: {
+                                nextState: "S1",
+                                action: () => machine.postEvent('THIRD')
+                            }
+                        }
+                    },
+                    S1: {
+                        transitions: {
+                            SECOND: {
+                                nextState: "S2"
+                            }
+                        }
+                    },
+                    S2: {
+                        transitions: {
+                            THIRD: {
+                                nextState: "END"
+                            }
+                        }
+                    },
+                    END: {
+                        entry: () => done()
+                    }
+                }
+            });
+
+            machine.postStart();
         });
 
     });
