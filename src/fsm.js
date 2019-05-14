@@ -50,7 +50,7 @@
  *                  action: (pass, exampleArg) => console.log(
  *                      "Optional. Called while transitioning from one state " +
  *                      "the next state in response to an event. Any " +
- *                      "arguments after the event name given to postEvent() " +
+ *                      "arguments after the event name given to queueEvent() " +
  *                      "are passed into this callback after the pass argument: " + pass + " " + exampleArg),
  *              },
  *          }
@@ -68,13 +68,13 @@
  *  }
  * });
  * 
- * demo.postStart();
+ * demo.queueStart();
  * // From here, you just need to notify the FSM of events so it can make the
  * // state transitions, executing any callbacks you provided in the spec.
  * // You can do this at any time, e.g. from a button click, or even from
  * // within one of the FSM callbacks you provided in spec -- in which case, the
  * // FSM will process it after it has finished processing the current event.
- * demo.postEvent("EXAMPLE_EVENT", "An example argument.");
+ * demo.queueEvent("EXAMPLE_EVENT", "An example argument.");
  */
 export function createMachine(config) {
     let machine = Object.create(fsm);
@@ -138,14 +138,14 @@ const fsm = {
      * Queues the start event, which places the state machine in the start
      * state, invoking an "entry" callback, if provided.
      *
-     * Calling postStart() after the machine has already started resets the
+     * Calling queueStart() after the machine has already started resets the
      * machine back to the start state, calling the entry action for the
      * start state if one was specified.
 
      * @returns Promise
      */
-    postStart() {
-        return this.postEvent(null);
+    queueStart() {
+        return this.queueEvent(null);
     },
 
     /**
@@ -154,7 +154,7 @@ const fsm = {
      * 
      * @returns Promise.
      */
-    postEvent(event, ...eventArgs) {
+    queueEvent(event, ...eventArgs) {
         return new Promise((resolve, reject) => {
             // setTimeout just to make this code asynchronous. This is so any
             // methods that end up getting called in the entry, exit, or action

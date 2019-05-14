@@ -176,7 +176,7 @@ describe("before the machine has started", function() {
             }
         });
 
-        return assert.rejects(machine.postEvent("EVENT"));
+        return assert.rejects(machine.queueEvent("EVENT"));
     });
 
     it("should not error if event is received and option ignoreUnexpectedEvents is true", function() {
@@ -195,14 +195,14 @@ describe("before the machine has started", function() {
             }
         });
 
-        return assert.doesNotReject(machine.postEvent("EVENT"));
+        return assert.doesNotReject(machine.queueEvent("EVENT"));
     });
 
 });
 
 describe("when the machine is running", function() {
 
-    it("should reset to the start state if postStart() is called again", function() {
+    it("should reset to the start state if queueStart() is called again", function() {
         let callbackCount = 0;
         const EXPECTED_CALLBACK_COUNT = 2;
 
@@ -228,9 +228,9 @@ describe("when the machine is running", function() {
 
         return Promise.all(
             [
-                machine.postStart(),        // ==> callbackCount = 1 after it enters START
-                machine.postEvent('EVENT'), // should be in MIDDLE state after it executes
-                machine.postStart()         // ==> callbackCount = 2 after it enters START
+                machine.queueStart(),        // ==> callbackCount = 1 after it enters START
+                machine.queueEvent('EVENT'), // should be in MIDDLE state after it executes
+                machine.queueStart()         // ==> callbackCount = 2 after it enters START
             ])       
             .then(() => assert.equal(callbackCount, EXPECTED_CALLBACK_COUNT));
     });
@@ -272,8 +272,8 @@ describe("when the machine is running", function() {
 
         return Promise.all(
             [
-                machine.postStart(),
-                machine.postEvent("EVENT")
+                machine.queueStart(),
+                machine.queueEvent("EVENT")
             ])
             .then(() => assert.deepStrictEqual(callbackPass, EXPECTED_CALLBACK_PASS));
     });
@@ -307,8 +307,8 @@ describe("when the machine is running", function() {
 
         return Promise.all(
             [
-                machine.postStart(),
-                machine.postEvent("EVENT", 'first', 'second')
+                machine.queueStart(),
+                machine.queueEvent("EVENT", 'first', 'second')
             ])
             .then(() => assert.deepStrictEqual(callbackArgs, EXPECTED_CALLBACK_ARGS));
     });
@@ -338,8 +338,8 @@ describe("when the machine is running", function() {
     
             return Promise.all(
                 [
-                    machine.postStart(),
-                    machine.postEvent("EVENT")
+                    machine.queueStart(),
+                    machine.queueEvent("EVENT")
                 ])
                 .then(() => assert.equal(callbackCount, EXPECTED_CALLBACK_COUNT));
         });
@@ -367,8 +367,8 @@ describe("when the machine is running", function() {
 
             return Promise.all(
                 [
-                    machine.postStart(),
-                    machine.postEvent("EVENT")
+                    machine.queueStart(),
+                    machine.queueEvent("EVENT")
                 ])
                 .then(() => assert.deepStrictEqual(callbacksCalled, EXPECTED_CALLBACKS_CALLED));
         });
@@ -377,12 +377,12 @@ describe("when the machine is running", function() {
             const machine = fsm.createMachine({
                 spec: {
                     START: {
-                        entry: () => machine.postEvent('FIRST'),
-                        exit: () => machine.postEvent('SECOND'),
+                        entry: () => machine.queueEvent('FIRST'),
+                        exit: () => machine.queueEvent('SECOND'),
                         transitions: {
                             FIRST: {
                                 nextState: "S1",
-                                action: () => machine.postEvent('THIRD')
+                                action: () => machine.queueEvent('THIRD')
                             }
                         }
                     },
@@ -406,7 +406,7 @@ describe("when the machine is running", function() {
                 }
             });
 
-            machine.postStart();
+            machine.queueStart();
         });
 
     });
