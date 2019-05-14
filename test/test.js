@@ -16,6 +16,45 @@ describe("when creating the machine", function() {
             });
     });
 
+    describe("when you specify a different name for the start state", function() {
+
+        it("should not throw error", function() {
+            assert.doesNotThrow(() => fsm.createMachine({
+                start: "INIT",
+                spec: {
+                    INIT: {
+                        transitions: {
+                            EVENT: {
+                                nextState: "END"
+                            }
+                        }
+                    }
+                }
+            }));
+        });
+
+        it("should throw error if there is no start state", function() {
+            assert.throws(() => fsm.createMachine({
+                start: "INIT",
+                spec: {
+                    START: {
+                        transitions: {
+                            EVENT: {
+                                nextState: "END"
+                            }
+                        }
+                    }
+                }
+            }),
+            {
+                message: "missing start state INIT",
+                name: "FiniteStateMachine [STATE: <None>]",
+                state: null
+            });
+        });
+
+    });
+
     it("should not throw error if the end state does not exist", function() {
         assert.doesNotThrow(() => fsm.createMachine({
             spec: {
@@ -28,6 +67,25 @@ describe("when creating the machine", function() {
                 }
             }
         }));
+    });
+
+    describe("when you specify a different name for the end state", function() {
+
+        it("should not throw error even though the end state does not have an entry in spec", function() {
+            assert.doesNotThrow(() => fsm.createMachine({
+                end: "FINAL",
+                spec: {
+                    START: {
+                        transitions: {
+                            EVENT: {
+                                nextState: "FINAL"
+                            }
+                        }
+                    }
+                }
+            }));
+        });
+        
     });
 
     it("should throw error if a nextState does not exist (other than the end state, which is optional)", function() {
