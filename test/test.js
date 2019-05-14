@@ -57,7 +57,8 @@ describe("when creating the machine", function() {
                 }
             },
             ENDIER_END: {
-                // This entry is needed so the test for invalid nextStates does not fail.
+                // This entry is needed so the test for invalid nextStates does not fail
+                // because only the end state is allowed to not have any entry.
             }
         };
         
