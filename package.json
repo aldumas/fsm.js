@@ -1,5 +1,5 @@
 {
-  "name": "fsm.js",
+  "name": "fsmjs",
   "version": "0.1.0",
   "description": "FSM implementation",
   "main": "fsm.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aldumas/fsm.js.git"
+    "url": "git+https://github.com/aldumas/fsmjs.git"
   },
   "author": "Adam Dumas",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/aldumas/fsm.js/issues"
+    "url": "https://github.com/aldumas/fsmjs/issues"
   },
-  "homepage": "https://github.com/aldumas/fsm.js#readme",
+  "homepage": "https://github.com/aldumas/fsmjs#readme",
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
