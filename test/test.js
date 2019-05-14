@@ -8,7 +8,12 @@ var fsm = require("../src/fsm.js");
 describe("when creating the machine", function() {
 
     it("should throw error if there is no start state", function() {
-        assert.throws(() => fsm.createMachine({spec: {}}), fsm.error(null, 'missing start state START'));
+        assert.throws(() => fsm.createMachine({spec: {}}),
+            {
+                message: "missing start state START",
+                name: "FiniteStateMachine [STATE: <None>]",
+                state: null
+            });
     });
 
     it("should not throw error if the end state does not exist", function() {
@@ -37,7 +42,11 @@ describe("when creating the machine", function() {
         };
         
         assert.throws(() => fsm.createMachine({spec}),
-            fsm.error(null, "invalid next state - NOT_EXIST"));
+            {
+                message: "invalid next state - NOT_EXIST",
+                name: "FiniteStateMachine [STATE: <None>]",
+                state: null
+            });
     });
 
     it("should throw error if there are any transitions out of the end state", function() {
@@ -63,7 +72,11 @@ describe("when creating the machine", function() {
         };
         
         assert.throws(() => fsm.createMachine({spec}),
-            fsm.error(spec.END, "end state should not have transitions"));
+            {
+                message: "end state should not have transitions",
+                name: "FiniteStateMachine [STATE: <None>]",
+                state: null
+            });
     });
 
     it("should throw error if the end state has an exit callback", function() {
@@ -81,7 +94,11 @@ describe("when creating the machine", function() {
         };
         
         assert.throws(() => fsm.createMachine({spec}),
-            fsm.error(spec.END, "end state should not have an exit callback"));
+            {
+                message: "end state should not have an exit callback",
+                name: "FiniteStateMachine [STATE: <None>]",
+                state: null
+            });
     });
 
 });

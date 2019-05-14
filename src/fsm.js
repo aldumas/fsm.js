@@ -243,6 +243,14 @@ function validateFsm(spec, start, end) {
     if (validStates.indexOf(start) < 0) {
         ok = false;
         errMsg = `missing start state ${start}`;
+    } else if (spec[end]) {
+        if (spec[end].exit) {
+            ok = false;
+            errMsg = "end state should not have an exit callback";
+        } else if (spec[end].transitions) {
+            ok = false;
+            errMsg = "end state should not have transitions";
+        }
     } else if (invalidStates.length > 0) {
         ok = false;
         errMsg = `invalid next state${invalidStates.length > 1 ? 's' : ''} - ${invalidStates.join(', ')}`;
@@ -279,7 +287,7 @@ function allNextStates(spec) {
         })());
 }
 
-export function error(state, message) {
+function error(state, message) {
     let err = new Error(message);
     err.name = `FiniteStateMachine [STATE: ${state == null ? '<None>' : state.name}]`;
     err.state = state;
