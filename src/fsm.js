@@ -184,7 +184,7 @@ const fsm = {
 
                     let transition = this._state.spec.transitions[event];
 
-                    callOptionalFn(transition.action, this._pass, ...eventArgs);
+                    callOptionalFn(transition.action, this._pass, eventArgs);
 
                     nextState = transition.nextState;
                 }
@@ -217,9 +217,9 @@ const fsm = {
 
 // Helpers /////////////////////////////////////////////////////////////////////
 
-function callOptionalFn(fn, pass, args) {
+function callOptionalFn(fn, pass, args=[]) {
     if (fn) {
-        fn(pass, args);
+        fn(pass, ...args);
     }
 }
 

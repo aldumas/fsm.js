@@ -159,13 +159,85 @@ describe("when the machine is running", function() {
             .then(() => assert.equal(callbackCount, EXPECTED_CALLBACK_COUNT));
     });
 
-    it("should pass arguments to action, but not to entry or exit", function() {
-        assert.fail();
+    it("should pass the opaque value pass to action, entry, and exit", function() {
+        const PASS = {
+            some: "data",
+            any: "info"
+        };
+
+        const callbackPass = {
+            entry: null,
+            exit: null,
+            action: null
+        };
+        const EXPECTED_CALLBACK_PASS = {
+            entry: PASS,
+            exit: PASS,
+            action: PASS
+        };
+
+        const machine = fsm.createMachine({
+
+            pass: PASS,
+
+            spec: {
+                START: {
+                    entry: pass => callbackPass.entry = pass,
+                    exit: pass => callbackPass.exit = pass,
+                    transitions: {
+                        EVENT: {
+                            nextState: "END",
+                            action: pass => callbackPass.action = pass
+                        }
+                    }
+                }
+            }
+        });
+
+        return Promise.all(
+            [
+                machine.postStart(),
+                machine.postEvent("EVENT")
+            ])
+            .then(() => assert.deepStrictEqual(callbackPass, EXPECTED_CALLBACK_PASS));
     });
 
-    it("should pass the opaque value pass to action, entry, and exit", function() {
-        assert.fail();
+    it("should pass arguments to action, but not to entry or exit", function() {
+        const callbackArgs = {
+            entry: null,
+            exit: null,
+            action: null
+        };
+        const EXPECTED_CALLBACK_ARGS = {
+            entry: [],
+            exit: [],
+            action: ['first', 'second']
+        };
+
+        const machine = fsm.createMachine({
+            spec: {
+                START: {
+                    entry: (pass, ...args) => callbackArgs.entry = args,
+                    exit: (pass, ...args) => callbackArgs.exit = args,
+                    transitions: {
+                        EVENT: {
+                            nextState: "END",
+                            action: (pass, ...args) => callbackArgs.action = args
+                        }
+                    }
+                }
+            }
+        });
+
+        return Promise.all(
+            [
+                machine.postStart(),
+                machine.postEvent("EVENT", 'first', 'second')
+            ])
+            .then(() => assert.deepStrictEqual(callbackArgs, EXPECTED_CALLBACK_ARGS));
     });
+
+    
 
     describe("when transitioning from state to state", function() {
 
