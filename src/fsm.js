@@ -3,7 +3,6 @@
  * 
  * @module
  * @author Adam Dumas
- * @todo Set up testing.
  */
 
 /**
@@ -77,7 +76,7 @@
  * demo.queueEvent("EXAMPLE_EVENT", "An example argument.");
  */
 export function createMachine(config) {
-    let machine = Object.create(fsm);
+    let machine = Object.create(protoFsm);
 
     let {spec, pass, start, end, options} = config || {};
 
@@ -91,23 +90,18 @@ export function createMachine(config) {
     // later.
     throwErrorOnInvalidFsmSpec(spec, start, end);
 
-    // This is the only data that changes during the execution of the machine.
-    // Each machine needs its own values, so it must be set on this machine
-    // object; otherwise the corresponding values in the prototype FSM would
-    // be changed during the execution of this machine.
-    let state = null;
-
     return Object.assign(machine, {
         _spec: spec,
         _start: start,
         _end: end,
-        _pass: pass,
+        _pass: pass, // OK if undefined
         _options: options,
-        _state: state});
+        _state: null
+    });
 }
 
 /** Prototype of all FSMs. */
-const fsm = {
+const protoFsm = {
     _state: null,
     _start: 'START',
     _end: 'END',
